@@ -49,7 +49,6 @@
 local char, concat = string.char, table.concat
 
 local base64 = {}
-
 -- Taken from numberlua by David Manura
 -- https://github.com/davidm/lua-bit-numberlua/blob/master/lmod/bit/numberlua.lua
 local extract = bit32 and bit32.extract

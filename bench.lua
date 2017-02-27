@@ -8,7 +8,6 @@ for i = 1, N do
 	t[i] = letters:sub( nletters, nletters )
 end
 local s = table.concat( t )
-
 local t = os.clock()
 local encoded = base64.encode( s )
 local encodetime = os.clock() - t
@@ -18,6 +17,6 @@ local decoded = base64.decode( encoded )
 local decodetime = os.clock() - t
 
 assert( s == decoded )
-print(('Encoding: %d bytes/sec'):format( N/encodetime ))
-print(('Decoding: %d bytes/sec'):format( N/decodetime ))
+print(('Encoding: %d bytes/sec'):format( math.floor(N/encodetime)))
+print(('Decoding: %d bytes/sec'):format( math.floor(N/decodetime)))
 
