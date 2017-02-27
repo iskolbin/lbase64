@@ -1,0 +1,14 @@
+dist: trusty
+sudo: true
+language: lua
+
+notifications:
+  email: false
+
+before_install:
+  - sudo apt install luajit lua5.1 lua5.2
+
+script:
+  - lua5.1 test.lua
+  - lua5.2 test.lua
+  - luajit test.lua
