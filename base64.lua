@@ -1,6 +1,6 @@
 --[[ 
  
- base64 -- v1.0.0 public domain Lua base64 encoder/decoder
+ base64 -- v1.1.0 public domain Lua base64 encoder/decoder
  no warranty implied; use at your own risk
  
  Needs bit32.extract function. If not present it's implemented using BitOp
@@ -138,14 +138,17 @@ function base64.encode( str, encoder )
 	encoder = encoder or DEFAULT_ENCODER
 	local t, k, n = {}, 1, #str
 	local lastn = n % 3
+	local cache = {}
 	for i = 1, n-lastn, 3 do
 		local a, b, c = str:byte( i, i+2 )
 		local v = a*0x10000 + b*0x100 + c
-		t[k] = encoder[extract(v,18,6)]
-		t[k+1] = encoder[extract(v,12,6)]
-		t[k+2] = encoder[extract(v,6,6)]
-		t[k+3] = encoder[extract(v,0,6)]
-		k = k + 4
+		local s = cache[v]
+		if not s then
+			s = encoder[extract(v,18,6)] .. encoder[extract(v,12,6)] .. encoder[extract(v,6,6)] .. encoder[extract(v,0,6)]
+			cache[v] = s
+		end
+		t[k] = s
+		k = k + 1
 	end
 	if lastn == 2 then
 		local a, b = str:byte( n-1, n )
@@ -166,21 +169,24 @@ end
 function base64.decode( b64 )
 	decoder = decoder or DEFAULT_DECODER
 	local t, k = {}, 1
+	local cache = {}
 	local n = #b64
 	local padding = b64:sub(-2) == '==' and 2 or b64:sub(-1) == '=' and 1 or 0
 	for i = 1, padding > 0 and n-4 or n, 4 do
 		local a, b, c, d = b64:byte( i, i+3 )
 		local v = decoder[a]*0x40000 + decoder[b]*0x1000 + decoder[c]*0x40 + decoder[d]
-		t[k] = char( extract(v,16,8))
-		t[k+1] = char( extract(v,8,8))
-		t[k+2] = char( extract(v,0,8))
-		k = k + 3
+		local s = cache[v]
+		if not s then
+			s = char( extract(v,16,8), extract(v,8,8), extract(v,0,8))
+			cache[v] = s
+		end
+		t[k] = s
+		k = k + 1
 	end
 	if padding == 1 then
 		local a, b, c = b64:byte( n-3, n-1 )
 		local v = decoder[a]*0x40000 + decoder[b]*0x1000 + decoder[c]*0x40
-		t[k] = char( extract(v,16,8))
-		t[k+1] = char( extract(v,8,8))
+		t[k] = char( extract(v,16,8), extract(v,8,8))
 	elseif padding == 2 then
 		local a, b = b64:byte( n-3, n-2 )
 		local v = decoder[a]*0x40000 + decoder[b]*0x1000
