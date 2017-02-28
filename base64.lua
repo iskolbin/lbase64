@@ -1,6 +1,6 @@
 --[[ 
  
- base64 -- v1.1.0 public domain Lua base64 encoder/decoder
+ base64 -- v1.2.0 public domain Lua base64 encoder/decoder
  no warranty implied; use at your own risk
  
  Needs bit32.extract function. If not present it's implemented using BitOp
@@ -174,11 +174,12 @@ function base64.decode( b64 )
 	local padding = b64:sub(-2) == '==' and 2 or b64:sub(-1) == '=' and 1 or 0
 	for i = 1, padding > 0 and n-4 or n, 4 do
 		local a, b, c, d = b64:byte( i, i+3 )
-		local v = decoder[a]*0x40000 + decoder[b]*0x1000 + decoder[c]*0x40 + decoder[d]
-		local s = cache[v]
+		local v0 = a*0x1000000 + b*0x10000 + c*0x100 + d
+		local s = cache[v0]
 		if not s then
+			local v = decoder[a]*0x40000 + decoder[b]*0x1000 + decoder[c]*0x40 + decoder[d]
 			s = char( extract(v,16,8), extract(v,8,8), extract(v,0,8))
-			cache[v] = s
+			cache[v0] = s
 		end
 		t[k] = s
 		k = k + 1
