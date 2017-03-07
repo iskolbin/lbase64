@@ -6,8 +6,7 @@ Lua base64 encoder/decoder
 
 Pure Lua [base64](https://en.wikipedia.org/wiki/Base64) encoder/decoder. Works with 
 Lua 5.1+ and LuaJIT. Fallbacks to pure Lua bit operations if bit/bit32/native bit 
-operators is not available (using 
-[numberlua library](https://github.com/davidm/lua-bit-numberlua) by David Manura).
+operators is not available.
 
 ```lua
 local base64 = require'base64'

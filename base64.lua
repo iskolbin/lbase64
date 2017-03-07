@@ -1,35 +1,12 @@
---[[ 
- 
- base64 -- v1.3.0 public domain Lua base64 encoder/decoder
+--[[
+
+ base64 -- v1.4.0 public domain Lua base64 encoder/decoder
  no warranty implied; use at your own risk
- 
+
  Needs bit32.extract function. If not present it's implemented using BitOp
- or Lua 5.3 native bit operators. For Lua 5.1 fallback to pure Lua 
- implementation taken from David's Manura numberlua library
- (https://github.com/davidm/lua-bit-numberlua). Original license for the
- library is
-
- ============================================================================
- Copyright (C) 2008, David Manura.
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- =============================================================================
+ or Lua 5.3 native bit operators. For Lua 5.1 fallbacks to pure Lua
+ implementation inspired by Rici Lake's post:
+   http://ricilake.blogspot.co.uk/2007/10/iterating-bits-in-lua.html
 
  author: Ilya Kolbin (iskolbin@gmail.com)
  url: github.com/iskolbin/lbase64
@@ -46,11 +23,9 @@
 
 --]]
 
-local char, concat = string.char, table.concat
 
 local base64 = {}
--- Taken from numberlua by David Manura
--- https://github.com/davidm/lua-bit-numberlua/blob/master/lmod/bit/numberlua.lua
+
 local extract = bit32 and bit32.extract
 if not extract then
 	if bit then
@@ -63,47 +38,22 @@ if not extract then
 			return ( v >> from ) & ((1 << width) - 1)
 		end]]()
 	else
-		local setmetatable, floor = _G.setmetatable, math.floor
-		local function memoize(f)
-			local mt = {}
-			local t = setmetatable({}, mt)
-			function mt:__index(k)
-				local v = f(k)
-				t[k] = v
-				return v
-			end
-			return t
-		end
-		
-		local function make_bitop_uncached(t, m)
-			local function bitop(a, b)
-				local res, p = 0, 1
-				while a ~= 0 and b ~= 0 do
-					local am, bm = a%m, b%m
-					res = res + t[am][bm]*p
-					a, b, p = (a - am) / m, (b - bm) / m, p*m
-				end
-				res = res + (a+b)*p
-				return res
-			end
-			return bitop
-		end
-
-		local op1 = make_bitop_uncached({[0]={[0]=0,[1]=1},[1]={[0]=1,[1]=0}}, 2^1 )
-		local op2 = memoize( function(a)
-			return memoize( function(b)
-				return op1(a, b)
-			end)
-		end)
-
-		local bxor = make_bitop_uncached(op2, 2^4)
-		
 		extract = function( v, from, width )
-			local a, b = floor(v % 2^32 / 2^from), 2^width - 1
-			return ((a+b) - bxor(a,b))/2
+			local w = 0
+			local flag = 2^from
+			for i = 0, width-1 do
+				local flag2 = flag + flag
+				if v % flag2 >= flag then
+					w = w + 2^i
+				end
+				flag = flag2
+			end
+			return w
 		end
 	end
 end
+
+local char, concat = string.char, table.concat
 
 function base64.makeencoder( s62, s63, spad )
 	local encoder = {}
