@@ -26,8 +26,8 @@ local base64 = {}
 
 local extract = _G.bit32 and _G.bit32.extract
 if not extract then
-	if bit then
-		local shl, shr, band = bit.lshift, bit.rshift, bit.band
+	if _G.bit then
+		local shl, shr, band = _G.bit.lshift, _G.bit.rshift, _G.bit.band
 		extract = function( v, from, width )
 			return band( shr( v, from ), shl( 1, width ) - 1 )
 		end
