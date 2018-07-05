@@ -13,8 +13,8 @@ before_install:
   - hererocks env --$LUA -rlatest    # Use latest LuaRocks, install into 'env' directory.
   - source env/bin/activate          # Add directory with all installed binaries to PATH.notifications:
 
-email:
-  false
+notifications:
+  email: false
 
 install:
   - luarocks install luacheck
