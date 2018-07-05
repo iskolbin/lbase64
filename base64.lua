@@ -1,6 +1,6 @@
 --[[
 
- base64 -- v1.4.0 public domain Lua base64 encoder/decoder
+ base64 -- v1.4.1 public domain Lua base64 encoder/decoder
  no warranty implied; use at your own risk
 
  Needs bit32.extract function. If not present it's implemented using BitOp
@@ -13,20 +13,18 @@
 
  COMPATIBILITY
 
- Lua 5.1, 5.2, 5.3, LuaJIT 1, 2
+ Lua 5.1, 5.2, 5.3, LuaJIT
 
  LICENSE
 
- This software is dual-licensed to the public domain and under the following
- license: you are granted a perpetual, irrevocable license to copy, modify,
- publish, and distribute this file as you see fit.
+ See end of file for license information.
 
 --]]
 
 
 local base64 = {}
 
-local extract = bit32 and bit32.extract
+local extract = _G.bit32 and _G.bit32.extract
 if not extract then
 	if bit then
 		local shl, shr, band = bit.lshift, bit.rshift, bit.band
@@ -53,7 +51,6 @@ if not extract then
 	end
 end
 
-local char, concat = string.char, table.concat
 
 function base64.makeencoder( s62, s63, spad )
 	local encoder = {}
@@ -69,7 +66,7 @@ end
 
 function base64.makedecoder( s62, s63, spad )
 	local decoder = {}
-	for b64code, charcode in pairs( base64.makeencoder(s64,s63,spad)) do
+	for b64code, charcode in pairs( base64.makeencoder( s62, s63, spad )) do
 		decoder[charcode] = b64code
 	end
 	return decoder
@@ -77,6 +74,8 @@ end
 
 local DEFAULT_ENCODER = base64.makeencoder()
 local DEFAULT_DECODER = base64.makedecoder()
+
+local char, concat = string.char, table.concat
 
 function base64.encode( str, encoder, usecaching )
 	encoder = encoder or DEFAULT_ENCODER
@@ -107,7 +106,7 @@ function base64.encode( str, encoder, usecaching )
 		local v = str:byte( n )*0x10000
 		t[k] = char(encoder[extract(v,18,6)], encoder[extract(v,12,6)], encoder[64], encoder[64])
 	end
-	return concat( t ) 
+	return concat( t )
 end
 
 function base64.decode( b64, decoder, usecaching )
@@ -147,3 +146,45 @@ function base64.decode( b64, decoder, usecaching )
 end
 
 return base64
+
+--[[
+------------------------------------------------------------------------------
+This software is available under 2 licenses -- choose whichever you prefer.
+------------------------------------------------------------------------------
+ALTERNATIVE A - MIT License
+Copyright (c) 2018 Ilya Kolbin
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+------------------------------------------------------------------------------
+ALTERNATIVE B - Public Domain (www.unlicense.org)
+This is free and unencumbered software released into the public domain.
+Anyone is free to copy, modify, publish, use, compile, sell, or distribute this
+software, either in source code form or as a compiled binary, for any purpose,
+commercial or non-commercial, and by any means.
+In jurisdictions that recognize copyright laws, the author or authors of this
+software dedicate any and all copyright interest in the software to the public
+domain. We make this dedication for the benefit of the public at large and to
+the detriment of our heirs and successors. We intend this dedication to be an
+overt act of relinquishment in perpetuity of all present and future rights to
+this software under copyright law.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+------------------------------------------------------------------------------
+--]]
