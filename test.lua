@@ -1,9 +1,6 @@
 local base64 = require('base64')
 
-local function test( s, b64, ignoreundecodable )
-	if ignoreundecodable then
-		b64 = base64.removeundecodable( b64 )
-	end
+local function test( s, b64 )
 	assert( base64.encode( s ) == b64 )
 	assert( base64.decode( b64 ) == s )
 	assert( base64.decode( base64.encode( s )) == s )
@@ -43,5 +40,5 @@ test( '\137\080\078\071\013\010\026\010\000\000\000\013\073\072\068\082\000\000\
 	'\000\000\073\069\078\068\174\066\096\130', 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEX///8AAABVwtN+' ..
 	'AAAAEklEQVQI12P4DwTEEFQGxNoLAO29P8HzAI07AAAAAElFTkSuQmCC' )
 
+assert( base64.decode('YW55IGNhcm5hbCBwbGVhc3VyZS4=\n\z\r\\\f' ) == 'any carnal pleasure.' )
 
-test( 'any carnal pleasure.', 'YW55IGNhcm5hbCBwbGVhc3VyZS4\n\r\f\z=', true )
