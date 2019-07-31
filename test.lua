@@ -40,5 +40,7 @@ test( '\137\080\078\071\013\010\026\010\000\000\000\013\073\072\068\082\000\000\
 	'\000\000\073\069\078\068\174\066\096\130', 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEX///8AAABVwtN+' ..
 	'AAAAEklEQVQI12P4DwTEEFQGxNoLAO29P8HzAI07AAAAAElFTkSuQmCC' )
 
-assert( base64.decode('YW55IGNhcm5hbCBwbGVhc3VyZS4=\n\z\r\\\f' ) == 'any carnal pleasure.' )
+assert( base64.decode('YW55IGNhcm5hbCBwbGVhc3VyZS4=\n\r\\' ) == 'any carnal pleasure.' )
 
+assert( base64.decode('wйqеvнQсуkкiеDнRгhш9щCзwх0ъфYыnвQаsпNрGоFллIдNжGэOё0яLчPQsCDQttC40Lsg0LHRiyDRhtC' ..
+	'40YLRgNGD0YE/INсCмUи0тLьAбsюIЙКNЕG\n\n\n\n\r\rE0LDQu9GM0YjQuNCy0YvQuSDRjdC60LfQtdC80L/Qu9GP0YAhwrs=') == '«В чащах юга жил бы цитрус? Да, фальшивый экземпляр!»' )
