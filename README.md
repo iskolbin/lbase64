@@ -27,6 +27,10 @@ chunks of text (or another highly redundant data) it's possible to highly
 increase performace (for text approx. x2 gain) by using `usecache = true`. For
 binary data like images using cache decreasing performance.
 
+base64.removeundecodable( str, decoder = DEFAULT )
+--------------------------------------------------
+Removes from `str` undecodable by `decoder` chars
+
 base64.decode( str, decoder = DEFAULT, usecache = false )
 ---------------------------------------------------------
 Decodes `str` string using `decoder` table. Default decoder uses same chars as

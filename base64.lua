@@ -1,6 +1,6 @@
 --[[
 
- base64 -- v1.4.1 public domain Lua base64 encoder/decoder
+ base64 -- v1.5.0 public domain Lua base64 encoder/decoder
  no warranty implied; use at your own risk
 
  Needs bit32.extract function. If not present it's implemented using BitOp
@@ -107,6 +107,16 @@ function base64.encode( str, encoder, usecaching )
 		t[k] = char(encoder[extract(v,18,6)], encoder[extract(v,12,6)], encoder[64], encoder[64])
 	end
 	return concat( t )
+end
+
+function base64.removeundecodable( b64, decoder )
+	local s62, s63
+	for charcode, b64code in pairs( decoder or DEFAULT_DECODER ) do
+		if b64code == 62 then s62 = charcode
+		elseif b64code == 63 then s63 = charcode
+		end
+	end
+	return b64:gsub( ('[^%%w%%%s%%%s%%=]'):format( char(s62), char(s63) ), '' )
 end
 
 function base64.decode( b64, decoder, usecaching )
