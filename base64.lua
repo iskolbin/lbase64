@@ -1,6 +1,6 @@
 --[[
 
- base64 -- v1.5.1 public domain Lua base64 encoder/decoder
+ base64 -- v1.5.2 public domain Lua base64 encoder/decoder
  no warranty implied; use at your own risk
 
  Needs bit32.extract function. If not present it's implemented using BitOp
