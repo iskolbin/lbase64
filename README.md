@@ -40,3 +40,9 @@ Make custom encoding table
 base64.makedecoder( s62 = '+', s63 = '/', spad = '=' )
 ------------------------------------------------------
 Make custom decoding table
+
+Install
+-------
+```bash
+luarocks install base64
+```
