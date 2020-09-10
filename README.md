@@ -44,5 +44,5 @@ Make custom decoding table
 Install
 -------
 ```bash
-luarocks install lua-resty-etcd
+luarocks install base64
 ```
