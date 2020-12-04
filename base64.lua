@@ -1,6 +1,6 @@
 --[[
 
- base64 -- v1.5.2 public domain Lua base64 encoder/decoder
+ base64 -- v1.5.3 public domain Lua base64 encoder/decoder
  no warranty implied; use at your own risk
 
  Needs bit32.extract function. If not present it's implemented using BitOp
@@ -13,7 +13,7 @@
 
  COMPATIBILITY
 
- Lua 5.1, 5.2, 5.3, LuaJIT
+ Lua 5.1+, LuaJIT
 
  LICENSE
 
@@ -24,18 +24,14 @@
 
 local base64 = {}
 
-local extract = _G.bit32 and _G.bit32.extract
+local extract = _G.bit32 and _G.bit32.extract -- Lua 5.2/Lua 5.3 in compatibility mode
 if not extract then
-	if _G.bit then
+	if _G.bit then -- LuaJIT
 		local shl, shr, band = _G.bit.lshift, _G.bit.rshift, _G.bit.band
 		extract = function( v, from, width )
 			return band( shr( v, from ), shl( 1, width ) - 1 )
 		end
-	elseif _G._VERSION >= "Lua 5.3" then
-		extract = load[[return function( v, from, width )
-			return ( v >> from ) & ((1 << width) - 1)
-		end]]()
-	else
+	elseif _G._VERSION == "Lua 5.1" then
 		extract = function( v, from, width )
 			local w = 0
 			local flag = 2^from
@@ -48,6 +44,10 @@ if not extract then
 			end
 			return w
 		end
+	else -- Lua 5.3+
+		extract = load[[return function( v, from, width )
+			return ( v >> from ) & ((1 << width) - 1)
+		end]]()
 	end
 end
 
