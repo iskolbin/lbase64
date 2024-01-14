@@ -109,14 +109,16 @@ function base64.encode( str, encoder, usecaching )
 	return concat( t )
 end
 
-function base64.decode( b64, decoder, usecaching )
+function base64.decode( b64, decoder, usecaching, schar1pos, schar2pos )
 	decoder = decoder or DEFAULT_DECODER
+	schar1pos = schar1pos or 62
+	schar2pos = schar2pos or 63
 	local pattern = '[^%w%+%/%=]'
 	if decoder then
 		local s62, s63
 		for charcode, b64code in pairs( decoder ) do
-			if b64code == 62 then s62 = charcode
-			elseif b64code == 63 then s63 = charcode
+			if b64code == schar1pos then s62 = charcode
+			elseif b64code == schar2pos then s63 = charcode
 			end
 		end
 		pattern = ('[^%%w%%%s%%%s%%=]'):format( char(s62), char(s63) )
